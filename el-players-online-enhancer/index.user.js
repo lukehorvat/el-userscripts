@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        EL Players Online enhancer
-// @version     1.0.0
+// @version     1.0.1
 // @author      Luke Horvat
 // @description Enhances the EL Players Online page.
 // @match       http://game.eternal-lands.com/online_players.htm
@@ -13,12 +13,14 @@ initHead();
 initBody();
 
 function initHead() {
+  // Nuke the <head> so that we can rebuild it from scratch.
   document.head.innerHTML = '';
 
   const title = document.createElement('title');
   title.textContent = 'EL Players Online';
   document.head.appendChild(title);
 
+  // The page normally doesn't have a favicon, so let's add one. :)
   const favicon = document.createElement('link');
   favicon.rel = 'icon';
   favicon.type = 'image/x-icon';
@@ -111,6 +113,7 @@ function initHead() {
 }
 
 function initBody() {
+  // Extract data from the page.
   const humanCount = Number(
     document.querySelector('b').textContent.match(/(\d+)/)[1]
   );
@@ -122,6 +125,7 @@ function initBody() {
     }))
     .sort((player1, player2) => player1.name.localeCompare(player2.name));
 
+  // Nuke the <body> so that we can render our own app.
   document.body.innerHTML = '';
 
   render(html`<${App} players=${players} />`, document.body);
