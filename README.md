@@ -1,17 +1,17 @@
-# userscripts
+# el-userscripts
 
-My userscripts for various websites.
+My userscripts for [Eternal Lands](http://www.eternal-lands.com).
 
 They _should_ work with most userscript managers and modern browsers, but I've only actually tested them with Tampermonkey in latest Chrome and Firefox.
 
 ## Players Online enhancer
 
-Makes the [Players Online](http://game.eternal-lands.com/online_players.htm) page a bit easier to read and adds search functionality.
+Makes the [Players Online page](http://game.eternal-lands.com/online_players.htm) easier to read and adds search functionality.
 
 Before:
 
-![before](./el-players-online-enhancer/screenshot_before.png)
+![before](./players-online-enhancer/screenshot_before.png)
 
 After:
 
-![after](./el-players-online-enhancer/screenshot_after.png)
+![after](./players-online-enhancer/screenshot_after.png)
