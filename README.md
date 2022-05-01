@@ -6,6 +6,8 @@ They _should_ work with most userscript managers and modern browsers, but I've o
 
 ## Players Online enhancer
 
+[![Install](https://img.shields.io/badge/-Install-success?style=for-the-badge)](https://github.com/lukehorvat/el-userscripts/raw/main/players-online-enhancer/index.user.js)
+
 Makes the [Players Online page](http://game.eternal-lands.com/online_players.htm) easier to read and adds search functionality.
 
 Before:
