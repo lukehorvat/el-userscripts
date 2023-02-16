@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        EL Greypal Querybot enhancer
-// @version     1.0.0
+// @version     1.0.1
 // @author      Luke Horvat
 // @description Enhances Greypal's Querybot page.
 // @match       http://greypal.el-fd.org/cgi-bin/querybot*
@@ -61,6 +61,7 @@ function styleForm() {
   const itemInput = form.querySelector('input[name=item]');
   itemInput.className = 'form-control form-control-sm d-inline w-25';
   itemInput.style = 'margin-left: 4px';
+  itemInput.focus(); // autofocus it
   const setsSelect = form.querySelector('select[name=sets]');
   setsSelect.className = 'form-select form-select-sm d-inline w-auto';
   setsSelect.style = 'margin-left: 4px';
