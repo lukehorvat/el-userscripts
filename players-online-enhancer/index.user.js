@@ -162,7 +162,7 @@ function App({ players }) {
         ${filteredPlayers.map(
           (player) => html`
             <li class="player ${player.type}">
-              <a href="${player.url}" target="_blank"> ${player.name} </a>
+              <a href=${player.url} target="_blank">${player.name}</a>
             </li>
           `
         )}
