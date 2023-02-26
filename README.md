@@ -16,6 +16,6 @@ Makes the [Players Online page](http://game.eternal-lands.com/online_players.htm
 
 [![Install](https://img.shields.io/badge/-Install-success?style=for-the-badge)](https://github.com/lukehorvat/el-userscripts/raw/main/greypal-querybot-enhancer/index.user.js)
 
-Makes Greypal's awesome [Querybot page](http://greypal.el-fd.org/cgi-bin/querybot) look a bit nicer.
+Makes Greypal's awesome [Querybot page](http://greypal.el-fd.org/cgi-bin/querybot) look nicer and adds extra functionality.
 
 ![](./greypal-querybot-enhancer/screenshot.png)
