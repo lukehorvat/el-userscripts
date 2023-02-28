@@ -10,8 +10,37 @@
 
 const { html, render, useState, useRef, useEffect } = htmPreact;
 
+initHead();
 initBody();
-addBootstrap();
+
+function initHead() {
+  // Add bootstrap stylesheet.
+  const bootstrap = document.createElement('link');
+  bootstrap.href =
+    'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css';
+  bootstrap.rel = 'stylesheet';
+  bootstrap.crossorigin = 'anonymous';
+  document.head.appendChild(bootstrap);
+
+  // Add custom styles.
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .item-image {
+      width: 36px;
+    }
+
+    .item-image:hover {
+      filter: brightness(1.25);
+    }
+
+    .countdown {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 function initBody() {
   // Extract data from the page.
@@ -79,15 +108,6 @@ function extractSearchResults() {
     });
 
   return { entries, hasSlotsAndEmu };
-}
-
-function addBootstrap() {
-  const bootstrap = document.createElement('link');
-  bootstrap.href =
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css';
-  bootstrap.rel = 'stylesheet';
-  bootstrap.crossorigin = 'anonymous';
-  document.head.appendChild(bootstrap);
 }
 
 function summariseItemPrices(entries, action) {
@@ -364,9 +384,9 @@ function ResultsTable({
           (entry) => html`
             <tr>
               ${showHosters &&
-              html`<td class="text-muted">${entry.hoster}</td>`}
+              html`<td class="align-middle text-muted">${entry.hoster}</td>`}
               ${showOwners && html`<td class="text-muted">${entry.owner}</td>`}
-              <td>
+              <td class="align-middle">
                 ${entry.botUrl
                   ? html`
                       <a href=${entry.botUrl} target="_blank">
@@ -376,19 +396,33 @@ function ResultsTable({
                   : entry.botName}
               </td>
               ${hasSlotsAndEmu &&
-              html`<td align="right"><code>${entry.slots}</code></td>`}
+              html`<td class="align-middle text-end">
+                <code>${entry.slots}</code>
+              </td>`}
               ${hasSlotsAndEmu &&
-              html`<td align="right"><code>${entry.emu}</code></td>`}
-              <td class="font-monospace small">${entry.location}</td>
+              html`<td class="align-middle text-end">
+                <code>${entry.emu}</code>
+              </td>`}
+              <td class="align-middle font-monospace small">
+                ${entry.location}
+              </td>
               ${action === 'Both' &&
-              html`<td class="fst-italic">${entry.action}</td>`}
-              <td align="right"><code>${entry.quantity}</code></td>
-              <td align="right"><code>${entry.price.toFixed(2)}</code></td>
-              <td>
-                <a href=${getItemWikiUrl(entry.itemName)}>
+              html`<td class="align-middle fst-italic">${entry.action}</td>`}
+              <td class="align-middle text-end">
+                <code>${entry.quantity}</code>
+              </td>
+              <td class="align-middle text-end">
+                <code>${entry.price.toFixed(2)}</code>
+              </td>
+              <td class="d-flex align-items-center">
+                <a
+                  href=${getItemWikiUrl(entry.itemName)}
+                  class="me-2"
+                  target="_blank"
+                >
                   <img
                     src=${getItemImageUrl(entry.itemName)}
-                    style="width: 28px; height: 28px; margin-right: 6px;"
+                    class="item-image rounded-circle border border-2 border-primary"
                     title="View item info on EL Wiki"
                   />
                 </a>
@@ -428,23 +462,27 @@ function SummaryTable({ results: { entries }, action }) {
             ([itemName, summary]) =>
               html`
                 <tr>
-                  <td>
-                    <a href=${getItemWikiUrl(itemName)}>
+                  <td class="d-flex align-items-center">
+                    <a
+                      href=${getItemWikiUrl(itemName)}
+                      class="me-2"
+                      target="_blank"
+                    >
                       <img
                         src=${getItemImageUrl(itemName)}
-                        style="width: 28px; height: 28px; margin-right: 6px;"
+                        class="item-image rounded-circle border border-2 border-primary"
                         title="View item info on EL Wiki"
                       />
                     </a>
                     <a href=${getItemUrl(itemName)}>${itemName}</a>
                   </td>
-                  <td align="right">
+                  <td class="align-middle text-end">
                     <code>${summary.minPrice.toFixed(2)}</code>
                   </td>
-                  <td align="right">
+                  <td class="align-middle text-end">
                     <code>${summary.avgPrice.toFixed(2)}</code>
                   </td>
-                  <td align="right">
+                  <td class="align-middle text-end">
                     <code>${summary.maxPrice.toFixed(2)}</code>
                   </td>
                 </tr>
@@ -457,10 +495,7 @@ function SummaryTable({ results: { entries }, action }) {
 
 function Countdown() {
   return html`
-    <div
-      class="text-muted small p-2"
-      style="position: absolute; top: 0; right: 0;"
-    >
+    <div class="countdown text-muted small px-4 py-2">
       Next update in <span id="second">60</span> seconds
     </div>
   `;
