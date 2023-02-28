@@ -5,6 +5,7 @@
 // @description Enhances Greypal's Querybot page.
 // @match       http://greypal.el-fd.org/cgi-bin/querybot*
 // @require     https://unpkg.com/htm@3.1.1/preact/standalone.umd.js
+// @require     https://github.com/lukehorvat/el-userscripts/raw/main/greypal-querybot-enhancer/items/item-image-ids.js
 // ==/UserScript==
 
 const { html, render, useState, useRef, useEffect } = htmPreact;
@@ -117,6 +118,19 @@ function getItemUrl(itemName) {
   const url = new window.URL(window.location.href);
   url.searchParams.set('item', `^${itemName}$`);
   return url.toString();
+}
+
+function getItemImageUrl(itemName) {
+  const imageId = itemImageIds[itemName];
+  return `https://github.com/lukehorvat/el-userscripts/raw/main/greypal-querybot-enhancer/items/item-image-${
+    imageId ?? 'placeholder'
+  }.jpg`;
+}
+
+function getItemWikiUrl(itemName) {
+  return `https://el-wiki.holy-eternalland.de/index.php?search=${encodeURIComponent(
+    itemName
+  )}`;
 }
 
 function App({ params, results }) {
@@ -371,6 +385,13 @@ function ResultsTable({
               <td align="right"><code>${entry.quantity}</code></td>
               <td align="right"><code>${entry.price.toFixed(2)}</code></td>
               <td>
+                <a href=${getItemWikiUrl(entry.itemName)}>
+                  <img
+                    src=${getItemImageUrl(entry.itemName)}
+                    style="width: 28px; height: 28px; margin-right: 6px;"
+                    title="View item info on EL Wiki"
+                  />
+                </a>
                 <a href=${getItemUrl(entry.itemName)}>${entry.itemName}</a>
               </td>
             </tr>
@@ -407,7 +428,16 @@ function SummaryTable({ results: { entries }, action }) {
             ([itemName, summary]) =>
               html`
                 <tr>
-                  <td><a href=${getItemUrl(itemName)}>${itemName}</a></td>
+                  <td>
+                    <a href=${getItemWikiUrl(itemName)}>
+                      <img
+                        src=${getItemImageUrl(itemName)}
+                        style="width: 28px; height: 28px; margin-right: 6px;"
+                        title="View item info on EL Wiki"
+                      />
+                    </a>
+                    <a href=${getItemUrl(itemName)}>${itemName}</a>
+                  </td>
                   <td align="right">
                     <code>${summary.minPrice.toFixed(2)}</code>
                   </td>
