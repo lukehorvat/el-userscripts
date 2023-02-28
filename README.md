@@ -1,6 +1,6 @@
 # el-item-image-extractor
 
-Converts item texture files to individual item images. Also generates a JSON file mapping item names to image IDs.
+Converts item texture files to individual item images. Also generates a JS file mapping item names to image IDs.
 
 ## Run
 
