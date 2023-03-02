@@ -5,7 +5,7 @@
 // @description Enhances Greypal's Querybot page.
 // @match       http://greypal.el-fd.org/cgi-bin/querybot*
 // @require     https://unpkg.com/htm@3.1.1/preact/standalone.umd.js
-// @require     https://github.com/lukehorvat/el-userscripts/raw/main/greypal-querybot-enhancer/items/item-image-ids.js
+// @require     https://github.com/lukehorvat/el-userscripts/raw/item-images/dist/item-image-ids.js
 // ==/UserScript==
 
 const { html, render, useState, useRef, useEffect } = htmPreact;
@@ -142,7 +142,7 @@ function getItemUrl(itemName) {
 
 function getItemImageUrl(itemName) {
   const imageId = itemImageIds[itemName];
-  return `https://github.com/lukehorvat/el-userscripts/raw/main/greypal-querybot-enhancer/items/item-image-${
+  return `https://github.com/lukehorvat/el-userscripts/raw/item-images/dist/item-image-${
     imageId ?? 'placeholder'
   }.jpg`;
 }

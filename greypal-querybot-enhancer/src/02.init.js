@@ -132,7 +132,7 @@ function getItemUrl(itemName) {
 
 function getItemImageUrl(itemName) {
   const imageId = itemImageIds[itemName];
-  return `https://github.com/lukehorvat/el-userscripts/raw/main/greypal-querybot-enhancer/items/item-image-${
+  return `https://github.com/lukehorvat/el-userscripts/raw/item-images/dist/item-image-${
     imageId ?? 'placeholder'
   }.jpg`;
 }
