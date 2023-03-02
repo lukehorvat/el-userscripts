@@ -54,3 +54,23 @@ function SummaryTable({ results: { entries }, action }) {
     </table>
   `;
 }
+
+function summariseItemPrices(entries, action) {
+  const pricesPerItem = entries
+    .filter((entry) => entry.action === action)
+    .reduce((map, entry) => {
+      const itemPrices = map.get(entry.itemName) || [];
+      return map.set(entry.itemName, [...itemPrices, entry.price]);
+    }, new Map());
+  const summaryPerItem = [...pricesPerItem].reduce(
+    (map, [itemName, itemPrices]) => {
+      const minPrice = Math.min(...itemPrices);
+      const maxPrice = Math.max(...itemPrices);
+      const avgPrice =
+        itemPrices.reduce((sum, price) => sum + price) / itemPrices.length;
+      return map.set(itemName, { minPrice, maxPrice, avgPrice });
+    },
+    new Map()
+  );
+  return [...summaryPerItem];
+}

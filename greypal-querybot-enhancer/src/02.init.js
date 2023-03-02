@@ -82,6 +82,9 @@ function extractSearchResults() {
       };
     })
     .map((cells) => {
+      const parsePrice = (text) =>
+        Number(text.trim().match(/^(\d+\.\d+)+gc$/)[1]);
+
       return {
         hoster: cells.hoster.textContent.trim(),
         botName: cells.bot.textContent.trim(),
@@ -98,47 +101,4 @@ function extractSearchResults() {
     });
 
   return { entries, hasSlotsAndEmu };
-}
-
-function summariseItemPrices(entries, action) {
-  const pricesPerItem = entries
-    .filter((entry) => entry.action === action)
-    .reduce((map, entry) => {
-      const itemPrices = map.get(entry.itemName) || [];
-      return map.set(entry.itemName, [...itemPrices, entry.price]);
-    }, new Map());
-  const summaryPerItem = [...pricesPerItem].reduce(
-    (map, [itemName, itemPrices]) => {
-      const minPrice = Math.min(...itemPrices);
-      const maxPrice = Math.max(...itemPrices);
-      const avgPrice =
-        itemPrices.reduce((sum, price) => sum + price) / itemPrices.length;
-      return map.set(itemName, { minPrice, maxPrice, avgPrice });
-    },
-    new Map()
-  );
-  return [...summaryPerItem];
-}
-
-function parsePrice(str) {
-  return Number(str.trim().match(/^(\d+\.\d+)+gc$/)[1]);
-}
-
-function getItemUrl(itemName) {
-  const url = new window.URL(window.location.href);
-  url.searchParams.set('item', `^${itemName}$`);
-  return url.toString();
-}
-
-function getItemImageUrl(itemName) {
-  const imageId = itemImageIds[itemName];
-  return `https://github.com/lukehorvat/el-userscripts/raw/item-images/dist/item-image-${
-    imageId ?? 'placeholder'
-  }.jpg`;
-}
-
-function getItemWikiUrl(itemName) {
-  return `https://el-wiki.holy-eternalland.de/index.php?search=${encodeURIComponent(
-    itemName
-  )}`;
 }
