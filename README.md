@@ -11,4 +11,4 @@ npm start
 
 ## Note to self
 
-The textures in this repo were copied from the EL client's `data` directory (`/Applications/Eternal Lands.app/Contents/Resources/data/textures`) and then converted from `.dds` to `.png` using Mac Preview. So if new items are added in a future client update, just repeat that same process.
+The images in the `textures` directory were copied directly from the EL client's `data/textures` directory, and were also manually converted from `.dds` to `.png` using Mac Preview.
