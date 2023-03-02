@@ -3,6 +3,7 @@ import path from 'node:path';
 import * as EL from 'eternal-lands.js';
 import sharp from 'sharp';
 
+const inputDir = path.resolve(__dirname, 'textures');
 const outputDir = path.resolve(__dirname, 'dist');
 itemImagesExtractor();
 
@@ -39,9 +40,9 @@ async function writeItemImages() {
 
   for (const imageId of itemImageIds) {
     const index = imageId % imagesPerTexture;
-    const texturePath = path.resolve(
-      __dirname,
-      `textures/items${Math.floor(imageId / imagesPerTexture) + 1}.png`
+    const texturePath = path.join(
+      inputDir,
+      `items${Math.floor(imageId / imagesPerTexture) + 1}.png`
     );
     const imagePath = path.resolve(outputDir, `item-image-${imageId}.jpg`);
 
