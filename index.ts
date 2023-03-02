@@ -23,6 +23,9 @@ async function writeMapSizes() {
     const mapName = path.basename(mapFile, '.elm.gz');
     const mapDataCompressed = await fs.readFile(mapFile);
     const mapData = zlib.gunzipSync(mapDataCompressed);
+
+    // Read the size info from the map header.
+    // Lifted from some of the scripts found here: https://github.com/feeltheburn/el-misc-tools
     const mapWidth = mapData.readUInt32LE(4) * 6;
     const mapHeight = mapData.readUInt32LE(8) * 6;
     mapSizes[mapName] = { width: mapWidth, height: mapHeight };
