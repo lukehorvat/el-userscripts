@@ -7,6 +7,8 @@
   "devDependencies": {
     "del": "6.1.1",
     "gulp": "4.0.2",
-    "gulp-concat": "2.6.1"
+    "gulp-concat": "2.6.1",
+    "gulp-sort": "2.0.0",
+    "merge2": "1.4.1"
   }
 }
