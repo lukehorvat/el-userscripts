@@ -1,4 +1,6 @@
-modulejs.define('body', ['preact', 'app'], ({ html, render }, App) => {
+modulejs.define('body', ['app'], (App) => {
+  const { html, render } = htmPreact;
+
   function initialize() {
     // Extract data from the page.
     const humanCount = Number(

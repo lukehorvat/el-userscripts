@@ -1,4 +1,6 @@
-modulejs.define('countdown', ['preact'], ({ html }) => {
+modulejs.define('countdown', () => {
+  const { html } = htmPreact;
+
   function Countdown() {
     return html`
       <div class="countdown text-muted small px-4 py-2">

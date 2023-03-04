@@ -1,7 +1,9 @@
 modulejs.define(
   'app',
-  ['preact', 'form', 'results-table', 'summary-table', 'countdown', 'footer'],
-  ({ html }, Form, ResultsTable, SummaryTable, Countdown, Footer) => {
+  ['form', 'results-table', 'summary-table', 'countdown', 'footer'],
+  (Form, ResultsTable, SummaryTable, Countdown, Footer) => {
+    const { html } = htmPreact;
+
     function App({ params, results }) {
       return html`
         <div class="container-fluid p-4">

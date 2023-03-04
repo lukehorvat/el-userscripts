@@ -1,4 +1,6 @@
-modulejs.define('form', ['preact'], ({ html, useState, useRef, useEffect }) => {
+modulejs.define('form', () => {
+  const { html, useState, useRef, useEffect } = htmPreact;
+
   function Form({ params }) {
     const [item, setItem] = useState(params.item);
     const [action, setAction] = useState(params.action);

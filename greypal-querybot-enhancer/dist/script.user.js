@@ -11,8 +11,10 @@
 
 modulejs.define(
   'app',
-  ['preact', 'form', 'results-table', 'summary-table', 'countdown', 'footer'],
-  ({ html }, Form, ResultsTable, SummaryTable, Countdown, Footer) => {
+  ['form', 'results-table', 'summary-table', 'countdown', 'footer'],
+  (Form, ResultsTable, SummaryTable, Countdown, Footer) => {
+    const { html } = htmPreact;
+
     function App({ params, results }) {
       return html`
         <div class="container-fluid p-4">
@@ -36,7 +38,9 @@ modulejs.define(
   }
 );
 
-modulejs.define('countdown', ['preact'], ({ html }) => {
+modulejs.define('countdown', () => {
+  const { html } = htmPreact;
+
   function Countdown() {
     return html`
       <div class="countdown text-muted small px-4 py-2">
@@ -48,7 +52,9 @@ modulejs.define('countdown', ['preact'], ({ html }) => {
   return Countdown;
 });
 
-modulejs.define('footer', ['preact'], ({ html }) => {
+modulejs.define('footer', () => {
+  const { html } = htmPreact;
+
   function Footer() {
     const isProduction = !window.location.pathname.endsWith('-dev');
     return html`
@@ -64,7 +70,9 @@ modulejs.define('footer', ['preact'], ({ html }) => {
   return Footer;
 });
 
-modulejs.define('form', ['preact'], ({ html, useState, useRef, useEffect }) => {
+modulejs.define('form', () => {
+  const { html, useState, useRef, useEffect } = htmPreact;
+
   function Form({ params }) {
     const [item, setItem] = useState(params.item);
     const [action, setAction] = useState(params.action);
@@ -236,201 +244,197 @@ modulejs.define('form', ['preact'], ({ html, useState, useRef, useEffect }) => {
   return Form;
 });
 
-modulejs.define(
-  'results-table',
-  ['preact', 'utils'],
-  ({ html }, { getItemUrl, getItemImageUrl, getItemWikiUrl }) => {
-    function ResultsTable({
-      results: { entries, hasSlotsAndEmu },
-      action,
-      showHosters,
-      showOwners,
-    }) {
-      if (entries.length <= 0) {
-        return html`
-          <div class="alert alert-danger" role="alert">No items found.</div>
-        `;
-      }
+modulejs.define('results-table', ['utils'], (utils) => {
+  const { html } = htmPreact;
+  const { getItemUrl, getItemImageUrl, getItemWikiUrl } = utils;
 
+  function ResultsTable({
+    results: { entries, hasSlotsAndEmu },
+    action,
+    showHosters,
+    showOwners,
+  }) {
+    if (entries.length <= 0) {
       return html`
-        <table class="table table-bordered table-hover mt-2">
-          <thead>
-            <tr>
-              ${showHosters && html`<th>Hoster</th>`}
-              ${showOwners && html`<th>Owner</th>`}
-              <th>
-                ${(() => {
-                  switch (action) {
-                    case 'Buy':
-                      return 'Bot (seller)';
-                    case 'Sell':
-                      return 'Bot (buyer)';
-                    default:
-                      return 'Bot';
-                  }
-                })()}
-              </th>
-              ${hasSlotsAndEmu && html`<th>Slots</th>`}
-              ${hasSlotsAndEmu && html`<th>EMU</th>`}
-              <th>Location</th>
-              ${action === 'Both' && html`<th>Action</th>`}
-              <th>Quantity</th>
-              <th>Price (gc)</th>
-              <th>Item</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${entries.map(
-              (entry) => html`
-                <tr>
-                  ${showHosters &&
-                  html`<td class="align-middle text-muted">
-                    ${entry.hoster}
-                  </td>`}
-                  ${showOwners &&
-                  html`<td class="text-muted">${entry.owner}</td>`}
-                  <td class="align-middle">
-                    ${entry.botUrl
-                      ? html`
-                          <a href=${entry.botUrl} target="_blank">
-                            ${entry.botName}
-                          </a>
-                        `
-                      : entry.botName}
-                  </td>
-                  ${hasSlotsAndEmu &&
-                  html`<td class="align-middle text-end">
-                    <code>${entry.slots}</code>
-                  </td>`}
-                  ${hasSlotsAndEmu &&
-                  html`<td class="align-middle text-end">
-                    <code>${entry.emu}</code>
-                  </td>`}
-                  <td class="align-middle font-monospace small">
-                    ${entry.location}
-                  </td>
-                  ${action === 'Both' &&
-                  html`<td class="align-middle fst-italic">
-                    ${entry.action}
-                  </td>`}
-                  <td class="align-middle text-end">
-                    <code>${entry.quantity}</code>
-                  </td>
-                  <td class="align-middle text-end">
-                    <code>${entry.price.toFixed(2)}</code>
-                  </td>
-                  <td class="d-flex align-items-center">
-                    <a
-                      href=${getItemWikiUrl(entry.itemName)}
-                      class="me-2"
-                      target="_blank"
-                    >
-                      <img
-                        src=${getItemImageUrl(entry.itemName)}
-                        class="item-image rounded-circle border border-2 border-primary"
-                        title="View item info on EL Wiki"
-                      />
-                    </a>
-                    <a href=${getItemUrl(entry.itemName)}>${entry.itemName}</a>
-                  </td>
-                </tr>
-              `
-            )}
-          </tbody>
-        </table>
+        <div class="alert alert-danger" role="alert">No items found.</div>
       `;
     }
 
-    return ResultsTable;
-  }
-);
-
-modulejs.define(
-  'summary-table',
-  ['preact', 'utils'],
-  ({ html }, { getItemUrl, getItemImageUrl, getItemWikiUrl }) => {
-    function SummaryTable({ results: { entries }, action }) {
-      const summarisedItemPrices = summariseItemPrices(entries, action);
-
-      if (summarisedItemPrices.length <= 0) {
-        return null;
-      }
-
-      return html`
-        <table class="table table-bordered table-hover mt-2">
-          <thead>
-            <tr>
-              <th>${action}</th>
-              <th>Min (gc)</th>
-              <th>Average (gc)</th>
-              <th>Max (gc)</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${summarisedItemPrices
-              .sort(([itemName1], [itemName2]) =>
-                itemName1.localeCompare(itemName2)
-              )
-              .map(
-                ([itemName, summary]) =>
-                  html`
-                    <tr>
-                      <td class="d-flex align-items-center">
-                        <a
-                          href=${getItemWikiUrl(itemName)}
-                          class="me-2"
-                          target="_blank"
-                        >
-                          <img
-                            src=${getItemImageUrl(itemName)}
-                            class="item-image rounded-circle border border-2 border-primary"
-                            title="View item info on EL Wiki"
-                          />
+    return html`
+      <table class="table table-bordered table-hover mt-2">
+        <thead>
+          <tr>
+            ${showHosters && html`<th>Hoster</th>`}
+            ${showOwners && html`<th>Owner</th>`}
+            <th>
+              ${(() => {
+                switch (action) {
+                  case 'Buy':
+                    return 'Bot (seller)';
+                  case 'Sell':
+                    return 'Bot (buyer)';
+                  default:
+                    return 'Bot';
+                }
+              })()}
+            </th>
+            ${hasSlotsAndEmu && html`<th>Slots</th>`}
+            ${hasSlotsAndEmu && html`<th>EMU</th>`}
+            <th>Location</th>
+            ${action === 'Both' && html`<th>Action</th>`}
+            <th>Quantity</th>
+            <th>Price (gc)</th>
+            <th>Item</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${entries.map(
+            (entry) => html`
+              <tr>
+                ${showHosters &&
+                html`<td class="align-middle text-muted">${entry.hoster}</td>`}
+                ${showOwners &&
+                html`<td class="text-muted">${entry.owner}</td>`}
+                <td class="align-middle">
+                  ${entry.botUrl
+                    ? html`
+                        <a href=${entry.botUrl} target="_blank">
+                          ${entry.botName}
                         </a>
-                        <a href=${getItemUrl(itemName)}>${itemName}</a>
-                      </td>
-                      <td class="align-middle text-end">
-                        <code>${summary.minPrice.toFixed(2)}</code>
-                      </td>
-                      <td class="align-middle text-end">
-                        <code>${summary.avgPrice.toFixed(2)}</code>
-                      </td>
-                      <td class="align-middle text-end">
-                        <code>${summary.maxPrice.toFixed(2)}</code>
-                      </td>
-                    </tr>
-                  `
-              )}
-          </tbody>
-        </table>
-      `;
-    }
-
-    function summariseItemPrices(entries, action) {
-      const pricesPerItem = entries
-        .filter((entry) => entry.action === action)
-        .reduce((map, entry) => {
-          const itemPrices = map.get(entry.itemName) || [];
-          return map.set(entry.itemName, [...itemPrices, entry.price]);
-        }, new Map());
-      const summaryPerItem = [...pricesPerItem].reduce(
-        (map, [itemName, itemPrices]) => {
-          const minPrice = Math.min(...itemPrices);
-          const maxPrice = Math.max(...itemPrices);
-          const avgPrice =
-            itemPrices.reduce((sum, price) => sum + price) / itemPrices.length;
-          return map.set(itemName, { minPrice, maxPrice, avgPrice });
-        },
-        new Map()
-      );
-      return [...summaryPerItem];
-    }
-
-    return SummaryTable;
+                      `
+                    : entry.botName}
+                </td>
+                ${hasSlotsAndEmu &&
+                html`<td class="align-middle text-end">
+                  <code>${entry.slots}</code>
+                </td>`}
+                ${hasSlotsAndEmu &&
+                html`<td class="align-middle text-end">
+                  <code>${entry.emu}</code>
+                </td>`}
+                <td class="align-middle font-monospace small">
+                  ${entry.location}
+                </td>
+                ${action === 'Both' &&
+                html`<td class="align-middle fst-italic">${entry.action}</td>`}
+                <td class="align-middle text-end">
+                  <code>${entry.quantity}</code>
+                </td>
+                <td class="align-middle text-end">
+                  <code>${entry.price.toFixed(2)}</code>
+                </td>
+                <td class="d-flex align-items-center">
+                  <a
+                    href=${getItemWikiUrl(entry.itemName)}
+                    class="me-2"
+                    target="_blank"
+                  >
+                    <img
+                      src=${getItemImageUrl(entry.itemName)}
+                      class="item-image rounded-circle border border-2 border-primary"
+                      title="View item info on EL Wiki"
+                    />
+                  </a>
+                  <a href=${getItemUrl(entry.itemName)}>${entry.itemName}</a>
+                </td>
+              </tr>
+            `
+          )}
+        </tbody>
+      </table>
+    `;
   }
-);
 
-modulejs.define('body', ['preact', 'app'], ({ html, render }, App) => {
+  return ResultsTable;
+});
+
+modulejs.define('summary-table', ['utils'], (utils) => {
+  const { html } = htmPreact;
+  const { getItemUrl, getItemImageUrl, getItemWikiUrl } = utils;
+
+  function SummaryTable({ results: { entries }, action }) {
+    const summarisedItemPrices = summariseItemPrices(entries, action);
+
+    if (summarisedItemPrices.length <= 0) {
+      return null;
+    }
+
+    return html`
+      <table class="table table-bordered table-hover mt-2">
+        <thead>
+          <tr>
+            <th>${action}</th>
+            <th>Min (gc)</th>
+            <th>Average (gc)</th>
+            <th>Max (gc)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${summarisedItemPrices
+            .sort(([itemName1], [itemName2]) =>
+              itemName1.localeCompare(itemName2)
+            )
+            .map(
+              ([itemName, summary]) =>
+                html`
+                  <tr>
+                    <td class="d-flex align-items-center">
+                      <a
+                        href=${getItemWikiUrl(itemName)}
+                        class="me-2"
+                        target="_blank"
+                      >
+                        <img
+                          src=${getItemImageUrl(itemName)}
+                          class="item-image rounded-circle border border-2 border-primary"
+                          title="View item info on EL Wiki"
+                        />
+                      </a>
+                      <a href=${getItemUrl(itemName)}>${itemName}</a>
+                    </td>
+                    <td class="align-middle text-end">
+                      <code>${summary.minPrice.toFixed(2)}</code>
+                    </td>
+                    <td class="align-middle text-end">
+                      <code>${summary.avgPrice.toFixed(2)}</code>
+                    </td>
+                    <td class="align-middle text-end">
+                      <code>${summary.maxPrice.toFixed(2)}</code>
+                    </td>
+                  </tr>
+                `
+            )}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function summariseItemPrices(entries, action) {
+    const pricesPerItem = entries
+      .filter((entry) => entry.action === action)
+      .reduce((map, entry) => {
+        const itemPrices = map.get(entry.itemName) || [];
+        return map.set(entry.itemName, [...itemPrices, entry.price]);
+      }, new Map());
+    const summaryPerItem = [...pricesPerItem].reduce(
+      (map, [itemName, itemPrices]) => {
+        const minPrice = Math.min(...itemPrices);
+        const maxPrice = Math.max(...itemPrices);
+        const avgPrice =
+          itemPrices.reduce((sum, price) => sum + price) / itemPrices.length;
+        return map.set(itemName, { minPrice, maxPrice, avgPrice });
+      },
+      new Map()
+    );
+    return [...summaryPerItem];
+  }
+
+  return SummaryTable;
+});
+
+modulejs.define('body', ['app'], (App) => {
+  const { html, render } = htmPreact;
+
   function initialize() {
     // Extract data from the page.
     const props = {
@@ -536,10 +540,6 @@ modulejs.define('head', () => {
   }
 
   return { initialize };
-});
-
-modulejs.define('preact', () => {
-  return htmPreact;
 });
 
 modulejs.define('utils', () => {

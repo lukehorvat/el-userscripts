@@ -1,4 +1,6 @@
-modulejs.define('app', ['preact'], ({ html, useState, useRef, useEffect }) => {
+modulejs.define('app', () => {
+  const { html, useState, useRef, useEffect } = htmPreact;
+
   function App({ players }) {
     const queryInput = useRef();
     const [query, setQuery] = useState('');

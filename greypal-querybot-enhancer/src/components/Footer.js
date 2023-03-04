@@ -1,4 +1,6 @@
-modulejs.define('footer', ['preact'], ({ html }) => {
+modulejs.define('footer', () => {
+  const { html } = htmPreact;
+
   function Footer() {
     const isProduction = !window.location.pathname.endsWith('-dev');
     return html`

@@ -8,7 +8,9 @@
 // @require     https://unpkg.com/htm@3.1.1/preact/standalone.umd.js
 // ==/UserScript==
 
-modulejs.define('app', ['preact'], ({ html, useState, useRef, useEffect }) => {
+modulejs.define('app', () => {
+  const { html, useState, useRef, useEffect } = htmPreact;
+
   function App({ players }) {
     const queryInput = useRef();
     const [query, setQuery] = useState('');
@@ -60,7 +62,9 @@ modulejs.define('app', ['preact'], ({ html, useState, useRef, useEffect }) => {
   return App;
 });
 
-modulejs.define('body', ['preact', 'app'], ({ html, render }, App) => {
+modulejs.define('body', ['app'], (App) => {
+  const { html, render } = htmPreact;
+
   function initialize() {
     // Extract data from the page.
     const humanCount = Number(
@@ -185,10 +189,6 @@ modulejs.define('head', () => {
   }
 
   return { initialize };
-});
-
-modulejs.define('preact', () => {
-  return htmPreact;
 });
 
 modulejs.define('main', ['head', 'body'], (head, body) => {
