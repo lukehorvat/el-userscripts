@@ -20,7 +20,7 @@ async function writeMapSizes() {
   const mapFilePaths = await glob(path.join(inputDir, '*.elm.gz'));
   const mapSizes: Record<string, { width: number; height: number }> = {};
 
-  for (const mapFilePath of mapFilePaths) {
+  for (const mapFilePath of mapFilePaths.sort()) {
     const mapFile = path.basename(mapFilePath, '.elm.gz');
     const mapDataCompressed = await fs.readFile(mapFilePath);
     const mapData = zlib.gunzipSync(mapDataCompressed);
