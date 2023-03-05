@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        EL Greypal Querybot enhancer
-// @version     2.1.0
+// @version     2.2.0
 // @author      Luke Horvat
 // @description Enhances Greypal's Querybot page.
 // @match       http://greypal.el-fd.org/cgi-bin/querybot*
