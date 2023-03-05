@@ -1,6 +1,13 @@
 modulejs.define('results-table', ['utils'], (utils) => {
-  const { html } = htmPreact;
-  const { getItemUrl, getItemImageUrl, getItemWikiUrl } = utils;
+  const { html, useState } = htmPreact;
+  const {
+    getItemUrl,
+    getItemWikiUrl,
+    getItemImageUrl,
+    getMapImageUrl,
+    getMapImageCoords,
+    getMapFileFromName,
+  } = utils;
 
   function ResultsTable({
     results: { entries, hasSlotsAndEmu },
@@ -45,57 +52,150 @@ modulejs.define('results-table', ['utils'], (utils) => {
           ${entries.map(
             (entry) => html`
               <tr>
-                ${showHosters &&
-                html`<td class="align-middle text-muted">${entry.hoster}</td>`}
-                ${showOwners &&
-                html`<td class="text-muted">${entry.owner}</td>`}
-                <td class="align-middle">
-                  ${entry.botUrl
-                    ? html`
-                        <a href=${entry.botUrl} target="_blank">
-                          ${entry.botName}
-                        </a>
-                      `
-                    : entry.botName}
-                </td>
-                ${hasSlotsAndEmu &&
-                html`<td class="align-middle text-end">
-                  <code>${entry.slots}</code>
-                </td>`}
-                ${hasSlotsAndEmu &&
-                html`<td class="align-middle text-end">
-                  <code>${entry.emu}</code>
-                </td>`}
-                <td class="align-middle font-monospace small">
-                  ${entry.location}
-                </td>
+                ${showHosters && html`<${HosterCell} hoster=${entry.hoster} />`}
+                ${showOwners && html`<${OwnerCell} owner=${entry.owner} />`}
+                <${BotCell} botName=${entry.botName} botUrl=${entry.botUrl} />
+                ${hasSlotsAndEmu && html`<${SlotsCell} slots=${entry.slots} />`}
+                ${hasSlotsAndEmu && html`<${EMUCell} emu=${entry.emu} />`}
+                <${LocationCell}
+                  mapName=${entry.mapName}
+                  mapCoords=${entry.mapCoords}
+                />
                 ${action === 'Both' &&
-                html`<td class="align-middle fst-italic">${entry.action}</td>`}
-                <td class="align-middle text-end">
-                  <code>${entry.quantity}</code>
-                </td>
-                <td class="align-middle text-end">
-                  <code>${entry.price.toFixed(2)}</code>
-                </td>
-                <td class="d-flex align-items-center">
-                  <a
-                    href=${getItemWikiUrl(entry.itemName)}
-                    class="me-2"
-                    target="_blank"
-                  >
-                    <img
-                      src=${getItemImageUrl(entry.itemName)}
-                      class="item-image rounded-circle border border-2 border-primary"
-                      title="View item info on EL Wiki"
-                    />
-                  </a>
-                  <a href=${getItemUrl(entry.itemName)}>${entry.itemName}</a>
-                </td>
+                html`<${ActionCell} action=${entry.action} />`}
+                <${QuantityCell} quantity=${entry.quantity} />
+                <${PriceCell} price=${entry.price} />
+                <${ItemCell} itemName=${entry.itemName} />
               </tr>
             `
           )}
         </tbody>
       </table>
+    `;
+  }
+
+  function HosterCell({ hoster }) {
+    return html`<td class="align-middle text-muted">${hoster}</td>`;
+  }
+
+  function OwnerCell({ owner }) {
+    return html`<td class="text-muted">${owner}</td>`;
+  }
+
+  function BotCell({ botName, botUrl }) {
+    return html`
+      <td class="align-middle">
+        ${botUrl
+          ? html`<a href=${botUrl} target="_blank">${botName}</a>`
+          : botName}
+      </td>
+    `;
+  }
+
+  function SlotsCell({ slots }) {
+    return html`
+      <td class="align-middle text-end">
+        <code>${slots}</code>
+      </td>
+    `;
+  }
+
+  function EMUCell({ emu }) {
+    return html`
+      <td class="align-middle text-end">
+        <code>${emu}</code>
+      </td>
+    `;
+  }
+
+  function LocationCell({ mapName, mapCoords }) {
+    const mapFile = getMapFileFromName(mapName);
+    const [showPreview, setShowPreview] = useState(false);
+
+    if (mapFile && showPreview) {
+      return html`
+        <td class="align-middle font-monospace small">
+          <a
+            href="#"
+            onClick=${(event) => {
+              event.preventDefault();
+              setShowPreview(false);
+            }}
+            style="display: block; position: relative;"
+          >
+            <img
+              src=${getMapImageUrl(mapFile)}
+              class="map-preview border border-2 border-primary"
+              title="Hide location preview"
+            />
+            <span
+              class="map-marker"
+              style=${getMapImageCoords(mapFile, mapCoords)}
+            />
+          </a>
+        </td>
+      `;
+    }
+
+    return html`
+      <td class="align-middle font-monospace small">
+        <div class="d-flex align-items-center">
+          <a
+            href="#"
+            class="me-2 ${mapFile ? '' : 'map-preview-link-disabled'}"
+            onClick=${(event) => {
+              event.preventDefault();
+              setShowPreview(!!mapFile);
+            }}
+          >
+            <img
+              src=${getMapImageUrl(mapFile)}
+              class="map-thumbnail rounded-circle border border-2 border-primary"
+              title=${mapFile
+                ? 'Show location preview'
+                : 'Location preview not available'}
+            />
+          </a>
+          ${mapName} ${mapCoords.x},${mapCoords.y}
+        </div>
+      </td>
+    `;
+  }
+
+  function ActionCell({ action }) {
+    return html`<td class="align-middle fst-italic">${action}</td>`;
+  }
+
+  function QuantityCell({ quantity }) {
+    return html`
+      <td class="align-middle text-end">
+        <code>${quantity}</code>
+      </td>
+    `;
+  }
+
+  function PriceCell({ price }) {
+    return html`
+      <td class="align-middle text-end">
+        <code>${price.toFixed(2)}</code>
+      </td>
+    `;
+  }
+
+  function ItemCell({ itemName }) {
+    return html`
+      <td class="align-middle">
+        <div class="d-flex align-items-center">
+          <a href=${getItemWikiUrl(itemName)} class="me-2" target="_blank">
+            <img
+              src=${getItemImageUrl(itemName)}
+              class="item-thumbnail rounded-circle border border-2 border-primary"
+              title="View item info on EL Wiki"
+            />
+          </a>
+          <a href=${getItemUrl(itemName)}>${itemName}</a>
+        </div>
+      </td>
     `;
   }
 

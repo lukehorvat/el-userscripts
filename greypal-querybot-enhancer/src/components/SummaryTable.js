@@ -1,6 +1,6 @@
 modulejs.define('summary-table', ['utils'], (utils) => {
   const { html } = htmPreact;
-  const { getItemUrl, getItemImageUrl, getItemWikiUrl } = utils;
+  const { getItemUrl, getItemWikiUrl, getItemImageUrl } = utils;
 
   function SummaryTable({ results: { entries }, action }) {
     const summarisedItemPrices = summariseItemPrices(entries, action);
@@ -28,34 +28,40 @@ modulejs.define('summary-table', ['utils'], (utils) => {
               ([itemName, summary]) =>
                 html`
                   <tr>
-                    <td class="d-flex align-items-center">
-                      <a
-                        href=${getItemWikiUrl(itemName)}
-                        class="me-2"
-                        target="_blank"
-                      >
-                        <img
-                          src=${getItemImageUrl(itemName)}
-                          class="item-image rounded-circle border border-2 border-primary"
-                          title="View item info on EL Wiki"
-                        />
-                      </a>
-                      <a href=${getItemUrl(itemName)}>${itemName}</a>
-                    </td>
-                    <td class="align-middle text-end">
-                      <code>${summary.minPrice.toFixed(2)}</code>
-                    </td>
-                    <td class="align-middle text-end">
-                      <code>${summary.avgPrice.toFixed(2)}</code>
-                    </td>
-                    <td class="align-middle text-end">
-                      <code>${summary.maxPrice.toFixed(2)}</code>
-                    </td>
+                    <${ItemCell} itemName=${itemName} />
+                    <${PriceCell} price=${summary.minPrice} />
+                    <${PriceCell} price=${summary.avgPrice} />
+                    <${PriceCell} price=${summary.maxPrice} />
                   </tr>
                 `
             )}
         </tbody>
       </table>
+    `;
+  }
+
+  function ItemCell({ itemName }) {
+    return html`
+      <td class="align-middle">
+        <div class="d-flex align-items-center">
+          <a href=${getItemWikiUrl(itemName)} class="me-2" target="_blank">
+            <img
+              src=${getItemImageUrl(itemName)}
+              class="item-thumbnail rounded-circle border border-2 border-primary"
+              title="View item info on EL Wiki"
+            />
+          </a>
+          <a href=${getItemUrl(itemName)}>${itemName}</a>
+        </div>
+      </td>
+    `;
+  }
+
+  function PriceCell({ price }) {
+    return html`
+      <td class="align-middle text-end">
+        <code>${price.toFixed(2)}</code>
+      </td>
     `;
   }
 

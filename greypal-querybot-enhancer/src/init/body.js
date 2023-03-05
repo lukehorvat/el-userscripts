@@ -51,8 +51,20 @@ modulejs.define('body', ['app'], (App) => {
         };
       })
       .map((cells) => {
-        const parsePrice = (text) =>
-          Number(text.trim().match(/^(\d+\.\d+)+gc$/)[1]);
+        const parsePrice = (text) => {
+          const match = text.trim().match(/^(\d+\.\d+)+gc$/);
+          return match ? Number(match[1]) : null;
+        };
+
+        const parseLocation = (location) => {
+          const match = location.trim().match(/^(.+?) (\d+),(\d+)$/);
+          return match
+            ? {
+                mapName: match[1],
+                mapCoords: { x: Number(match[2]), y: Number(match[3]) },
+              }
+            : { mapName: null, mapCoords: null };
+        };
 
         return {
           hoster: cells.hoster.textContent.trim(),
@@ -61,11 +73,11 @@ modulejs.define('body', ['app'], (App) => {
           slots: cells.slots?.textContent.trim(),
           emu: cells.emu?.textContent.trim(),
           owner: cells.owner.textContent.trim(),
-          location: cells.location.textContent.trim(),
           action: cells.action.textContent.trim(),
           quantity: cells.quantity.textContent.trim(),
           price: parsePrice(cells.price.textContent.trim()),
           itemName: cells.item.textContent.trim(),
+          ...parseLocation(cells.location.textContent.trim()),
         };
       });
 
