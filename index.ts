@@ -17,19 +17,19 @@ async function mapsExtractor() {
 }
 
 async function writeMapSizes() {
-  const mapFiles = await glob(path.join(inputDir, '*.elm.gz'));
+  const mapFilePaths = await glob(path.join(inputDir, '*.elm.gz'));
   const mapSizes: Record<string, { width: number; height: number }> = {};
 
-  for (const mapFile of mapFiles) {
-    const mapName = path.basename(mapFile, '.elm.gz');
-    const mapDataCompressed = await fs.readFile(mapFile);
+  for (const mapFilePath of mapFilePaths) {
+    const mapFile = path.basename(mapFilePath, '.elm.gz');
+    const mapDataCompressed = await fs.readFile(mapFilePath);
     const mapData = zlib.gunzipSync(mapDataCompressed);
 
     // Read the size info from the map header.
     // Lifted from some of the scripts found here: https://github.com/feeltheburn/el-misc-tools
     const mapWidth = mapData.readUInt32LE(4) * 6;
     const mapHeight = mapData.readUInt32LE(8) * 6;
-    mapSizes[mapName] = { width: mapWidth, height: mapHeight };
+    mapSizes[mapFile] = { width: mapWidth, height: mapHeight };
   }
 
   await fs.writeFile(
@@ -40,13 +40,13 @@ async function writeMapSizes() {
 }
 
 async function writeMapImages() {
-  const mapFiles = await glob(path.join(inputDir, '*.png'));
+  const mapFilePaths = await glob(path.join(inputDir, '*.png'));
 
-  for (const mapFile of mapFiles) {
-    const mapName = path.basename(mapFile, '.png');
-    await sharp(mapFile)
+  for (const mapFilePath of mapFilePaths) {
+    const mapFile = path.basename(mapFilePath, '.png');
+    await sharp(mapFilePath)
       .resize({ width: 300 })
-      .toFile(path.join(outputDir, `map-image-${mapName}.jpg`));
+      .toFile(path.join(outputDir, `map-image-${mapFile}.jpg`));
   }
 }
 
