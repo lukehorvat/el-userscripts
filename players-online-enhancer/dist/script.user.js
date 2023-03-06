@@ -8,58 +8,79 @@
 // @require     https://unpkg.com/htm@3.1.1/preact/standalone.umd.js
 // ==/UserScript==
 
-modulejs.define('app', () => {
-  const { html, useState, useRef, useEffect } = htmPreact;
+modulejs.define('app', ['form', 'players-list'], (Form, PlayersList) => {
+  const { html, useState } = htmPreact;
 
   function App({ players }) {
+    const [filteredPlayers, setFilteredPlayers] = useState();
+
+    return html`
+      <${Form} players=${players} onFilterChange=${setFilteredPlayers} />
+      ${filteredPlayers && html`<${PlayersList} players=${filteredPlayers} />`}
+    `;
+  }
+
+  return App;
+});
+
+modulejs.define('form', () => {
+  const { html, useState, useRef, useEffect } = htmPreact;
+
+  function Form({ players, onFilterChange }) {
     const queryInput = useRef();
     const [query, setQuery] = useState('');
     const [type, setType] = useState('human');
-    const filteredPlayers = players
-      .filter((player) => !!player.name.match(new RegExp(query, 'i')))
-      .filter((player) => !type || player.type === type);
+
+    useEffect(() => {
+      onFilterChange(
+        players
+          .filter((player) => !!player.name.match(new RegExp(query, 'i')))
+          .filter((player) => !type || player.type === type)
+      );
+    }, [query, type]);
 
     useEffect(() => {
       queryInput.current.focus(); // autofocus it
     }, [type]);
 
     return html`
-      <div>
-        <input
-          type="text"
-          onInput=${onQueryChange}
-          value=${query}
-          placeholder="Search players (regex)"
-          ref=${queryInput}
-        />
-        <select onChange=${onTypeChange} value=${type}>
-          <option value="human">Humans</option>
-          <option value="bot">Bots</option>
-          <option value="">All</option>
-        </select>
-        <h2>${filteredPlayers.length} online</h2>
-        <ul class="playerList">
-          ${filteredPlayers.map(
-            (player) => html`
-              <li class="player ${player.type}">
-                <a href=${player.url} target="_blank">${player.name}</a>
-              </li>
-            `
-          )}
-        </ul>
-      </div>
+      <input
+        type="text"
+        value=${query}
+        onInput=${(event) => setQuery(event.target.value)}
+        ref=${queryInput}
+        placeholder="Search players (regex)"
+      />
+      <select value=${type} onChange=${(event) => setType(event.target.value)}>
+        <option value="human">Humans</option>
+        <option value="bot">Bots</option>
+        <option value="">All</option>
+      </select>
     `;
-
-    function onQueryChange(event) {
-      setQuery(event.target.value);
-    }
-
-    function onTypeChange(event) {
-      setType(event.target.value);
-    }
   }
 
-  return App;
+  return Form;
+});
+
+modulejs.define('players-list', () => {
+  const { html } = htmPreact;
+
+  function PlayersList({ players }) {
+    return html`
+      <h2>${players.length} online</h2>
+      <ol>
+        ${players.map(
+          (player) => html`
+            <li class="player ${player.type}">
+              <a href=${player.url} target="_blank">${player.name}</a>
+            </li>
+          `
+        )}
+      </ol>
+    `;
+  }
+
+  return PlayersList;
 });
 
 modulejs.define('body', ['app'], (App) => {
@@ -67,10 +88,18 @@ modulejs.define('body', ['app'], (App) => {
 
   function initialize() {
     // Extract data from the page.
+    const players = extractPlayers();
+
+    // Nuke the <body> and render our own app in its place.
+    document.body.innerHTML = '';
+    render(html`<${App} players=${players} />`, document.body);
+  }
+
+  function extractPlayers() {
     const humanCount = Number(
       document.querySelector('b').textContent.match(/(\d+)/)[1]
     );
-    const players = Array.from(document.querySelectorAll('a'))
+    const players = [...document.querySelectorAll('a')]
       .map((link, index) => ({
         type: index < humanCount ? 'human' : 'bot',
         name: link.textContent,
@@ -78,10 +107,7 @@ modulejs.define('body', ['app'], (App) => {
       }))
       .sort((player1, player2) => player1.name.localeCompare(player2.name));
 
-    // Nuke the <body> so that we can render our own app.
-    document.body.innerHTML = '';
-
-    render(html`<${App} players=${players} />`, document.body);
+    return players;
   }
 
   return { initialize };
@@ -125,7 +151,7 @@ modulejs.define('head', () => {
         margin-left: 10px;
       }
 
-      ul {
+      ol {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 15px;
@@ -135,36 +161,36 @@ modulejs.define('head', () => {
       }
 
       @media (min-width: 400px) {
-        ul {
+        ol {
           grid-template-columns: repeat(3, 1fr);
         }
       }
 
       @media (min-width: 600px) {
-        ul {
+        ol {
           grid-template-columns: repeat(4, 1fr);
         }
       }
 
       @media (min-width: 800px) {
-        ul {
+        ol {
           grid-template-columns: repeat(5, 1fr);
         }
       }
 
       @media (min-width: 1000px) {
-        ul {
+        ol {
           grid-template-columns: repeat(6, 1fr);
         }
       }
 
       @media (min-width: 1200px) {
-        ul {
+        ol {
           grid-template-columns: repeat(7, 1fr);
         }
       }
 
-      ul li a {
+      ol li a {
         padding: 3px 5px;
         background: #555;
         font-size: 13px;
@@ -173,15 +199,15 @@ modulejs.define('head', () => {
         border-radius: 4px;
       }
 
-      ul li a:hover {
+      ol li a:hover {
         filter: brightness(1.25);
       }
 
-      ul li.human a {
+      ol li.human a {
         color: #fff;
       }
 
-      ul li.bot a {
+      ol li.bot a {
         color: #efa1ff;
       }
   `;

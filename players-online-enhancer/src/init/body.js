@@ -3,10 +3,18 @@ modulejs.define('body', ['app'], (App) => {
 
   function initialize() {
     // Extract data from the page.
+    const players = extractPlayers();
+
+    // Nuke the <body> and render our own app in its place.
+    document.body.innerHTML = '';
+    render(html`<${App} players=${players} />`, document.body);
+  }
+
+  function extractPlayers() {
     const humanCount = Number(
       document.querySelector('b').textContent.match(/(\d+)/)[1]
     );
-    const players = Array.from(document.querySelectorAll('a'))
+    const players = [...document.querySelectorAll('a')]
       .map((link, index) => ({
         type: index < humanCount ? 'human' : 'bot',
         name: link.textContent,
@@ -14,10 +22,7 @@ modulejs.define('body', ['app'], (App) => {
       }))
       .sort((player1, player2) => player1.name.localeCompare(player2.name));
 
-    // Nuke the <body> so that we can render our own app.
-    document.body.innerHTML = '';
-
-    render(html`<${App} players=${players} />`, document.body);
+    return players;
   }
 
   return { initialize };

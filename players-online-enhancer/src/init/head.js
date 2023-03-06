@@ -36,7 +36,7 @@ modulejs.define('head', () => {
         margin-left: 10px;
       }
 
-      ul {
+      ol {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 15px;
@@ -46,36 +46,36 @@ modulejs.define('head', () => {
       }
 
       @media (min-width: 400px) {
-        ul {
+        ol {
           grid-template-columns: repeat(3, 1fr);
         }
       }
 
       @media (min-width: 600px) {
-        ul {
+        ol {
           grid-template-columns: repeat(4, 1fr);
         }
       }
 
       @media (min-width: 800px) {
-        ul {
+        ol {
           grid-template-columns: repeat(5, 1fr);
         }
       }
 
       @media (min-width: 1000px) {
-        ul {
+        ol {
           grid-template-columns: repeat(6, 1fr);
         }
       }
 
       @media (min-width: 1200px) {
-        ul {
+        ol {
           grid-template-columns: repeat(7, 1fr);
         }
       }
 
-      ul li a {
+      ol li a {
         padding: 3px 5px;
         background: #555;
         font-size: 13px;
@@ -84,15 +84,15 @@ modulejs.define('head', () => {
         border-radius: 4px;
       }
 
-      ul li a:hover {
+      ol li a:hover {
         filter: brightness(1.25);
       }
 
-      ul li.human a {
+      ol li.human a {
         color: #fff;
       }
 
-      ul li.bot a {
+      ol li.bot a {
         color: #efa1ff;
       }
   `;
