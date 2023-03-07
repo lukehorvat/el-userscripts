@@ -75,6 +75,11 @@ modulejs.define('head', () => {
         }
       }
 
+      ol li {
+        display: flex;
+        align-items: center;
+      }
+
       ol li a {
         padding: 3px 5px;
         background: #555;
@@ -94,6 +99,21 @@ modulejs.define('head', () => {
 
       ol li.bot a {
         color: #efa1ff;
+      }
+
+      ol li button {
+        all: unset; /* TODO: Is this the correct way to clear button styles? */
+        margin-left: 5px;
+        cursor: pointer;
+      }
+
+      ol li:not(.pinned):not(:hover) button {
+        visibility: hidden;
+      }
+
+      ol li.pinned button:hover,
+      ol li:not(.pinned):hover button:not(:hover) {
+        filter: grayscale(1);
       }
   `;
     document.head.appendChild(style);

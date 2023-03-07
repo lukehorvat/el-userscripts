@@ -63,21 +63,68 @@ modulejs.define('form', () => {
 });
 
 modulejs.define('players-list', () => {
-  const { html } = htmPreact;
+  const { html, useState, useEffect } = htmPreact;
 
   function PlayersList({ players }) {
+    const [pins, setPins] = useState(() => readPinsFromStorage());
+
+    useEffect(() => {
+      writePinsToStorage(pins);
+    }, [pins]);
+
     return html`
       <h2>${players.length} online</h2>
       <ol>
-        ${players.map(
-          (player) => html`
-            <li class="player ${player.type}">
-              <a href=${player.url} target="_blank">${player.name}</a>
-            </li>
-          `
-        )}
+        ${players
+          .map((player) => ({
+            ...player,
+            isPinned: pins.includes(player.name.toLowerCase()),
+            togglePin() {
+              const pinsSet = new Set(pins);
+              if (this.isPinned) {
+                pinsSet.delete(player.name.toLowerCase());
+              } else {
+                pinsSet.add(player.name.toLowerCase());
+              }
+              setPins([...pinsSet]);
+            },
+          }))
+          .sort((player1, player2) => {
+            if (player1.isPinned && !player2.isPinned) {
+              return -1;
+            } else if (!player1.isPinned && player2.isPinned) {
+              return 1;
+            } else {
+              return player1.name.localeCompare(player2.name);
+            }
+          })
+          .map((player) => {
+            return html`
+              <li
+                class="player ${player.type} ${player.isPinned ? 'pinned' : ''}"
+              >
+                <a href=${player.url} target="_blank">${player.name}</a>
+                <button
+                  onClick=${() => player.togglePin()}
+                  title=${player.isPinned
+                    ? 'Unpin player from top of list'
+                    : 'Pin player to top of list'}
+                >
+                  📌
+                </button>
+              </li>
+            `;
+          })}
       </ol>
     `;
+  }
+
+  function writePinsToStorage(pins) {
+    return localStorage.setItem('pins', JSON.stringify(pins));
+  }
+
+  function readPinsFromStorage() {
+    return JSON.parse(localStorage.getItem('pins')) || [];
   }
 
   return PlayersList;
@@ -99,13 +146,11 @@ modulejs.define('body', ['app'], (App) => {
     const humanCount = Number(
       document.querySelector('b').textContent.match(/(\d+)/)[1]
     );
-    const players = [...document.querySelectorAll('a')]
-      .map((link, index) => ({
-        type: index < humanCount ? 'human' : 'bot',
-        name: link.textContent,
-        url: link.href,
-      }))
-      .sort((player1, player2) => player1.name.localeCompare(player2.name));
+    const players = [...document.querySelectorAll('a')].map((link, index) => ({
+      type: index < humanCount ? 'human' : 'bot',
+      name: link.textContent,
+      url: link.href,
+    }));
 
     return players;
   }
@@ -190,6 +235,11 @@ modulejs.define('head', () => {
         }
       }
 
+      ol li {
+        display: flex;
+        align-items: center;
+      }
+
       ol li a {
         padding: 3px 5px;
         background: #555;
@@ -209,6 +259,21 @@ modulejs.define('head', () => {
 
       ol li.bot a {
         color: #efa1ff;
+      }
+
+      ol li button {
+        all: unset; /* TODO: Is this the correct way to clear button styles? */
+        margin-left: 5px;
+        cursor: pointer;
+      }
+
+      ol li:not(.pinned):not(:hover) button {
+        visibility: hidden;
+      }
+
+      ol li.pinned button:hover,
+      ol li:not(.pinned):hover button:not(:hover) {
+        filter: grayscale(1);
       }
   `;
     document.head.appendChild(style);

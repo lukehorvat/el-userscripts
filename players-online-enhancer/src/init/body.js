@@ -14,13 +14,11 @@ modulejs.define('body', ['app'], (App) => {
     const humanCount = Number(
       document.querySelector('b').textContent.match(/(\d+)/)[1]
     );
-    const players = [...document.querySelectorAll('a')]
-      .map((link, index) => ({
-        type: index < humanCount ? 'human' : 'bot',
-        name: link.textContent,
-        url: link.href,
-      }))
-      .sort((player1, player2) => player1.name.localeCompare(player2.name));
+    const players = [...document.querySelectorAll('a')].map((link, index) => ({
+      type: index < humanCount ? 'human' : 'bot',
+      name: link.textContent,
+      url: link.href,
+    }));
 
     return players;
   }
