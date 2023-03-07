@@ -85,6 +85,7 @@ modulejs.define('players-list', () => {
                 pinsSet.delete(player.name.toLowerCase());
               } else {
                 pinsSet.add(player.name.toLowerCase());
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }
               setPins([...pinsSet]);
             },
