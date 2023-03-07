@@ -40,18 +40,29 @@ modulejs.define('players-list', () => {
                 class="player ${player.type} ${player.isPinned ? 'pinned' : ''}"
               >
                 <a href=${player.url} target="_blank">${player.name}</a>
-                <button
+                <span
+                  class="pin-button"
                   onClick=${() => player.togglePin()}
                   title=${player.isPinned
-                    ? 'Unpin player from top of list'
-                    : 'Pin player to top of list'}
+                    ? 'Unpin from top of list'
+                    : 'Pin to top of list'}
                 >
-                  📌
-                </button>
+                  <${StarIcon} />
+                </span>
               </li>
             `;
           })}
       </ol>
+    `;
+  }
+
+  function StarIcon() {
+    return html`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+        <polygon
+          points="41.504,39.537 60.062,0 78.618,39.538 120.115,45.877 90.088,76.653 97.176,120.107 60.061,99.593 22.946,120.107 30.035,76.653 0.01,45.878"
+        />
+      </svg>
     `;
   }
 

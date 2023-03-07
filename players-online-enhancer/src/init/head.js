@@ -101,19 +101,20 @@ modulejs.define('head', () => {
         color: #efa1ff;
       }
 
-      ol li button {
-        all: unset; /* TODO: Is this the correct way to clear button styles? */
+      ol li .pin-button {
+        width: 13px;
         margin-left: 5px;
         cursor: pointer;
+        fill: #ffd700;
       }
 
-      ol li:not(.pinned):not(:hover) button {
+      ol li.pinned .pin-button:hover,
+      ol li:not(.pinned):hover .pin-button:not(:hover) {
+        fill: #999;
+      }
+
+      ol li:not(.pinned):not(:hover) .pin-button {
         visibility: hidden;
-      }
-
-      ol li.pinned button:hover,
-      ol li:not(.pinned):hover button:not(:hover) {
-        filter: grayscale(1);
       }
   `;
     document.head.appendChild(style);
