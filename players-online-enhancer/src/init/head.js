@@ -102,10 +102,13 @@ modulejs.define('head', () => {
       }
 
       ol li .pin-button {
+        display: flex;
         width: 13px;
-        margin-left: 5px;
+        height: 100%;
+        padding: 0px 5px;
         cursor: pointer;
         fill: #ffd700;
+        visibility: hidden;
       }
 
       ol li.pinned .pin-button:hover,
@@ -113,8 +116,14 @@ modulejs.define('head', () => {
         fill: #999;
       }
 
-      ol li:not(.pinned):not(:hover) .pin-button {
-        visibility: hidden;
+      ol li.pinned .pin-button,
+      ol li:not(.pinned) .pin-button:hover,
+      ol li:not(.pinned) a:hover + .pin-button {
+        visibility: visible;
+      }
+
+      ol li .pin-button:active {
+        transform: scale(0.8);
       }
   `;
     document.head.appendChild(style);
