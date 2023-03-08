@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        EL Players Online enhancer
-// @version     1.2.0
+// @version     1.2.1
 // @author      Luke Horvat
 // @description Enhances the EL Players Online page.
 // @match       http://game.eternal-lands.com/online_players.htm
@@ -210,38 +210,44 @@ modulejs.define('head', () => {
 
       ol {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(1, 1fr);
         grid-gap: 15px;
         margin: 0;
         padding: 0;
         list-style-type: none;
       }
 
-      @media (min-width: 400px) {
+      @media (min-width: 300px) {
+        ol {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 500px) {
         ol {
           grid-template-columns: repeat(3, 1fr);
         }
       }
 
-      @media (min-width: 600px) {
+      @media (min-width: 700px) {
         ol {
           grid-template-columns: repeat(4, 1fr);
         }
       }
 
-      @media (min-width: 800px) {
+      @media (min-width: 900px) {
         ol {
           grid-template-columns: repeat(5, 1fr);
         }
       }
 
-      @media (min-width: 1000px) {
+      @media (min-width: 1100px) {
         ol {
           grid-template-columns: repeat(6, 1fr);
         }
       }
 
-      @media (min-width: 1200px) {
+      @media (min-width: 1300px) {
         ol {
           grid-template-columns: repeat(7, 1fr);
         }
