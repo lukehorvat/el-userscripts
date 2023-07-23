@@ -47,14 +47,14 @@ async function writeMapImages() {
 
   for (const mapFilePath of mapFilePaths) {
     const mapName = path.basename(mapFilePath, '.dds');
-    const { buffer: mapTextureBuffer } = await fs.readFile(mapFilePath);
+    const ddsFile = await fs.readFile(mapFilePath);
 
     // Extract the first (largest) mipmap texture from the DDS file.
-    const ddsInfo = parseDDS(mapTextureBuffer);
+    const ddsInfo = parseDDS(ddsFile.buffer);
     const [image] = ddsInfo.images;
     const [imageWidth, imageHeight] = image.shape;
     const imageDataView = new DataView(
-      mapTextureBuffer,
+      ddsFile.buffer,
       image.offset,
       image.length
     );
