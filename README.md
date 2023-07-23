@@ -1,6 +1,6 @@
 # el-maps-extractor
 
-Extracts size info from map files. Also generates image thumbnails of maps.
+Node.js script that extracts size info from EL map files. Also generates image thumbnails of maps.
 
 ## Run
 
@@ -11,4 +11,4 @@ npm start
 
 ## Note to self
 
-The files in the `maps` directory were copied directly from the EL client's `data/maps` directory. The images were also manually converted from `.dds` to `.png` using Mac Preview.
+The `maps` directory in `src/data` was directly copied from the EL client's `data` directory.
