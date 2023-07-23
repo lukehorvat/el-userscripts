@@ -2,9 +2,11 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import * as EL from 'eternal-lands.js';
 import sharp from 'sharp';
+import parseDDS from 'parse-dds';
+import decodeDXT, { DXTFormat } from 'decode-dxt';
 
-const inputDir = path.resolve(__dirname, 'textures');
-const outputDir = path.resolve(__dirname, 'dist');
+const inputDir = path.resolve(__dirname, './data/textures');
+const outputDir = path.resolve(__dirname, '../dist');
 itemImagesExtractor();
 
 async function itemImagesExtractor() {
@@ -25,10 +27,9 @@ async function writeItemImageIds() {
     },
     {}
   );
-  const scriptPath = path.join(outputDir, 'item-image-ids.js');
 
   await fs.writeFile(
-    scriptPath,
+    path.join(outputDir, 'item-image-ids.js'),
     `window.itemImageIds = ${JSON.stringify(itemNameToImageIds, null, 2)};\n`,
     'utf8'
   );
@@ -40,20 +41,45 @@ async function writeItemImages() {
 
   for (const imageId of itemImageIds) {
     const index = imageId % imagesPerTexture;
-    const texturePath = path.join(
-      inputDir,
-      `items${Math.floor(imageId / imagesPerTexture) + 1}.png`
+    const { buffer: textureBuffer } = await fs.readFile(
+      path.join(
+        inputDir,
+        `items${Math.floor(imageId / imagesPerTexture) + 1}.dds`
+      )
     );
-    const imagePath = path.resolve(outputDir, `item-image-${imageId}.jpg`);
 
-    await sharp(texturePath)
+    // Extract the first (largest) mipmap texture from the DDS file.
+    const ddsInfo = parseDDS(textureBuffer);
+    const [image] = ddsInfo.images;
+    const [imageWidth, imageHeight] = image.shape;
+    const imageDataView = new DataView(
+      textureBuffer,
+      image.offset,
+      image.length
+    );
+
+    // Convert the DXT texture to RGBA pixel data.
+    const rgbaData = decodeDXT(
+      imageDataView,
+      imageWidth,
+      imageHeight,
+      ddsInfo.format as DXTFormat
+    );
+
+    await sharp(rgbaData, {
+      raw: {
+        width: imageWidth,
+        height: imageHeight,
+        channels: 4,
+      },
+    })
       .extract({
         left: 50 * (index % 5),
         top: 50 * Math.floor(index / 5),
         width: 50,
         height: 50,
       })
-      .toFile(imagePath);
+      .toFile(path.resolve(outputDir, `item-image-${imageId}.jpg`));
   }
 }
 
