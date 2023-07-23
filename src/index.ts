@@ -41,7 +41,7 @@ async function writeItemImages() {
 
   for (const imageId of itemImageIds) {
     const index = imageId % imagesPerTexture;
-    const { buffer: textureBuffer } = await fs.readFile(
+    const ddsFile = await fs.readFile(
       path.join(
         inputDir,
         `items${Math.floor(imageId / imagesPerTexture) + 1}.dds`
@@ -49,11 +49,11 @@ async function writeItemImages() {
     );
 
     // Extract the first (largest) mipmap texture from the DDS file.
-    const ddsInfo = parseDDS(textureBuffer);
+    const ddsInfo = parseDDS(ddsFile.buffer);
     const [image] = ddsInfo.images;
     const [imageWidth, imageHeight] = image.shape;
     const imageDataView = new DataView(
-      textureBuffer,
+      ddsFile.buffer,
       image.offset,
       image.length
     );
