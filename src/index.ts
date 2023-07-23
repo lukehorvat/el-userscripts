@@ -3,9 +3,11 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { glob } from 'glob';
 import sharp from 'sharp';
+import parseDDS from 'parse-dds';
+import decodeDXT, { DXTFormat } from 'decode-dxt';
 
-const inputDir = path.resolve(__dirname, 'maps');
-const outputDir = path.resolve(__dirname, 'dist');
+const inputDir = path.resolve(__dirname, './data/maps');
+const outputDir = path.resolve(__dirname, '../dist');
 mapsExtractor();
 
 async function mapsExtractor() {
@@ -21,15 +23,16 @@ async function writeMapSizes() {
   const mapSizes: Record<string, { width: number; height: number }> = {};
 
   for (const mapFilePath of mapFilePaths.sort()) {
-    const mapFile = path.basename(mapFilePath, '.elm.gz');
+    const mapName = path.basename(mapFilePath, '.elm.gz');
     const mapDataCompressed = await fs.readFile(mapFilePath);
     const mapData = zlib.gunzipSync(mapDataCompressed);
 
     // Read the size info from the map header.
     // Lifted from some of the scripts found here: https://github.com/feeltheburn/el-misc-tools
-    const mapWidth = mapData.readUInt32LE(4) * 6;
-    const mapHeight = mapData.readUInt32LE(8) * 6;
-    mapSizes[mapFile] = { width: mapWidth, height: mapHeight };
+    mapSizes[mapName] = {
+      width: mapData.readUInt32LE(4) * 6,
+      height: mapData.readUInt32LE(8) * 6,
+    };
   }
 
   await fs.writeFile(
@@ -40,13 +43,40 @@ async function writeMapSizes() {
 }
 
 async function writeMapImages() {
-  const mapFilePaths = await glob(path.join(inputDir, '*.png'));
+  const mapFilePaths = await glob(path.join(inputDir, '*.dds'));
 
   for (const mapFilePath of mapFilePaths) {
-    const mapFile = path.basename(mapFilePath, '.png');
-    await sharp(mapFilePath)
+    const mapName = path.basename(mapFilePath, '.dds');
+    const { buffer: mapTextureBuffer } = await fs.readFile(mapFilePath);
+
+    // Extract the first (largest) mipmap texture from the DDS file.
+    const ddsInfo = parseDDS(mapTextureBuffer);
+    const [image] = ddsInfo.images;
+    const [imageWidth, imageHeight] = image.shape;
+    const imageDataView = new DataView(
+      mapTextureBuffer,
+      image.offset,
+      image.length
+    );
+
+    // Convert the DXT texture to RGBA pixel data.
+    const rgbaData = decodeDXT(
+      imageDataView,
+      imageWidth,
+      imageHeight,
+      ddsInfo.format as DXTFormat
+    );
+
+    // Write the raw RGBA data to file.
+    await sharp(rgbaData, {
+      raw: {
+        width: imageWidth,
+        height: imageHeight,
+        channels: 4,
+      },
+    })
       .resize({ width: 300 })
-      .toFile(path.join(outputDir, `map-image-${mapFile}.jpg`));
+      .toFile(path.join(outputDir, `map-image-${mapName}.jpg`));
   }
 }
 
