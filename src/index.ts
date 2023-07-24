@@ -4,7 +4,7 @@ import zlib from 'node:zlib';
 import { glob } from 'glob';
 import sharp from 'sharp';
 import parseDDS from 'parse-dds';
-import decodeDXT, { DXTFormat } from 'decode-dxt';
+import decodeDXT from 'decode-dxt';
 
 const inputDir = path.resolve(__dirname, './data/maps');
 const outputDir = path.resolve(__dirname, '../dist');
@@ -64,7 +64,7 @@ async function writeMapImages() {
       imageDataView,
       imageWidth,
       imageHeight,
-      ddsInfo.format as DXTFormat
+      ddsInfo.format as any
     );
 
     // Write the raw RGBA data to file.

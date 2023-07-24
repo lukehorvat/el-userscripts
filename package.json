@@ -5,6 +5,7 @@
     "start": "ts-node src/index.ts"
   },
   "dependencies": {
+    "@types/decode-dxt": "1.0.0",
     "@types/parse-dds": "1.0.0",
     "@types/sharp": "0.31.1",
     "decode-dxt": "1.0.1",
