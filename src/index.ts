@@ -3,7 +3,7 @@ import path from 'node:path';
 import * as EL from 'eternal-lands.js';
 import sharp from 'sharp';
 import parseDDS from 'parse-dds';
-import decodeDXT, { DXTFormat } from 'decode-dxt';
+import decodeDXT from 'decode-dxt';
 
 const inputDir = path.resolve(__dirname, './data/textures');
 const outputDir = path.resolve(__dirname, '../dist');
@@ -63,7 +63,7 @@ async function writeItemImages() {
       imageDataView,
       imageWidth,
       imageHeight,
-      ddsInfo.format as DXTFormat
+      ddsInfo.format as any
     );
 
     await sharp(rgbaData, {
